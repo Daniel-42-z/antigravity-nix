@@ -4,7 +4,8 @@
   fetchurl,
   autoPatchelfHook,
   zlib,
-}: let
+}:
+let
   pname = "google-antigravity-cli";
   version = "1.0.0-5288553236791296";
 
@@ -13,32 +14,32 @@
     sha256 = "sha256-cAljQFdPr8SgbE08gFcxTiLUdc4cgg0K1R/wf7fpnrY=";
   };
 in
-  stdenv.mkDerivation {
-    inherit pname version src;
+stdenv.mkDerivation {
+  inherit pname version src;
 
-    nativeBuildInputs = [autoPatchelfHook];
-    buildInputs = [
-      zlib
-      stdenv.cc.cc.lib
-    ];
+  nativeBuildInputs = [ autoPatchelfHook ];
+  buildInputs = [
+    zlib
+    stdenv.cc.cc.lib
+  ];
 
-    sourceRoot = ".";
+  sourceRoot = ".";
 
-    installPhase = ''
-      runHook preInstall
+  installPhase = ''
+    runHook preInstall
 
-      mkdir -p $out/bin
-      cp antigravity $out/bin/antigravity-cli
-      chmod +x $out/bin/antigravity-cli
+    mkdir -p $out/bin
+    cp antigravity $out/bin/agy
+    chmod +x $out/bin/agy
 
-      runHook postInstall
-    '';
+    runHook postInstall
+  '';
 
-    meta = with lib; {
-      description = "Google Antigravity CLI";
-      homepage = "https://antigravity.google";
-      license = licenses.unfree;
-      platforms = platforms.linux;
-      mainProgram = "antigravity-cli";
-    };
-  }
+  meta = with lib; {
+    description = "Google Antigravity CLI";
+    homepage = "https://antigravity.google";
+    license = licenses.unfree;
+    platforms = platforms.linux;
+    mainProgram = "agy";
+  };
+}
