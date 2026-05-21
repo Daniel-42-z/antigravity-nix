@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash -p jq curl gnused
 # Auto-update script for Google Antigravity apps
 
 set -euo pipefail
