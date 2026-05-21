@@ -209,6 +209,13 @@ let
             --replace-fail "/bin/bash" "${bash}/bin/bash"
         fi
       fi
+
+      # Extract icon from app.asar if present
+      if [ -f "resources/app.asar" ]; then
+        asar extract-file resources/app.asar icon.png || true
+      elif [ -f "resources/app/icon.png" ]; then
+        cp resources/app/icon.png icon.png || true
+      fi
     '';
 
     installPhase = ''
@@ -286,6 +293,9 @@ let
       if [ -f "${antigravity-unwrapped}/lib/antigravity/resources/app/resources/linux/code.png" ]; then
         cp ${antigravity-unwrapped}/lib/antigravity/resources/app/resources/linux/code.png $out/share/pixmaps/antigravity.png
         cp ${antigravity-unwrapped}/lib/antigravity/resources/app/resources/linux/code.png $out/share/icons/hicolor/1024x1024/apps/antigravity.png
+      elif [ -f "${antigravity-unwrapped}/lib/antigravity/icon.png" ]; then
+        cp ${antigravity-unwrapped}/lib/antigravity/icon.png $out/share/pixmaps/antigravity.png
+        cp ${antigravity-unwrapped}/lib/antigravity/icon.png $out/share/icons/hicolor/1024x1024/apps/antigravity.png
       fi
 
       runHook postInstall
@@ -343,6 +353,13 @@ let
             --replace-fail "/bin/bash" "${bash}/bin/bash"
         fi
       fi
+
+      # Extract icon from app.asar if present
+      if [ -f "resources/app.asar" ]; then
+        asar extract-file resources/app.asar icon.png || true
+      elif [ -f "resources/app/icon.png" ]; then
+        cp resources/app/icon.png icon.png || true
+      fi
     '';
 
     desktopItems = [ desktopItem ];
@@ -375,6 +392,9 @@ let
       if [ -f "$out/lib/antigravity/resources/app/resources/linux/code.png" ]; then
         cp $out/lib/antigravity/resources/app/resources/linux/code.png $out/share/pixmaps/antigravity.png
         cp $out/lib/antigravity/resources/app/resources/linux/code.png $out/share/icons/hicolor/1024x1024/apps/antigravity.png
+      elif [ -f "$out/lib/antigravity/icon.png" ]; then
+        cp $out/lib/antigravity/icon.png $out/share/pixmaps/antigravity.png
+        cp $out/lib/antigravity/icon.png $out/share/icons/hicolor/1024x1024/apps/antigravity.png
       fi
 
       runHook postInstall
