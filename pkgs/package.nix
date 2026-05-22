@@ -60,38 +60,13 @@
 let
   isIde = appType == "Antigravity IDE";
 
-  links = builtins.fromJSON (
-    builtins.readFile ../artifacts/antigravity-2-and-ide--1--scraped-links.json
-  );
-  hashes = builtins.fromJSON (
-    builtins.readFile ../artifacts/antigravity-2-and-ide--2--prefetched-sha256.json
+  versions = builtins.fromJSON (
+    builtins.readFile ../artifacts/versions.json
   );
 
   system = stdenv.hostPlatform.system;
 
-  platformInfo =
-    if system == "aarch64-darwin" then
-      {
-        url = links.${appType}.macos."apple silicon";
-        hash = hashes.${appType}.macos."apple silicon";
-      }
-    else if system == "x86_64-darwin" then
-      {
-        url = links.${appType}.macos.intel;
-        hash = hashes.${appType}.macos.intel;
-      }
-    else if system == "aarch64-linux" then
-      {
-        url = links.${appType}.linux.arm64;
-        hash = hashes.${appType}.linux.arm64;
-      }
-    else if system == "x86_64-linux" then
-      {
-        url = links.${appType}.linux.x64;
-        hash = hashes.${appType}.linux.x64;
-      }
-    else
-      throw "Unsupported system for Antigravity ${appType}: ${system}";
+  platformInfo = versions.${appType}.${system} or (throw "Unsupported system for Antigravity ${appType}: ${system}");
 
   finalUrl = platformInfo.url;
   finalHash = platformInfo.hash;

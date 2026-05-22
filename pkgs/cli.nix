@@ -7,31 +7,26 @@
 }:
 let
   pname = "google-antigravity-cli";
-
   system = stdenv.hostPlatform.system;
 
-  manifestFile =
-    if system == "x86_64-linux" then
-      ../artifacts/antigravity-cli--manifests/linux_amd64.json
-    else if system == "aarch64-linux" then
-      ../artifacts/antigravity-cli--manifests/linux_arm64.json
-    else if system == "x86_64-darwin" then
-      ../artifacts/antigravity-cli--manifests/darwin_amd64.json
-    else if system == "aarch64-darwin" then
-      ../artifacts/antigravity-cli--manifests/darwin_arm64.json
-    else
-      throw "Unsupported system for Antigravity CLI: ${system}";
+  versions = builtins.fromJSON (builtins.readFile ../artifacts/versions.json);
+  manifest = versions."Antigravity CLI".${system} or (throw "Unsupported system for Antigravity CLI: ${system}");
 
-  manifest = builtins.fromJSON (builtins.readFile manifestFile);
-
-  version = manifest.version;
+  # The CLI artifact currently stores version inside the manifest, but we need to extract it from the URL or add it to JSON.
+  # Actually, the update-version.sh script did not store the version string for CLI, it just stored url and hash.
+  # Let's extract the version from the URL here like we do in package.nix.
+  version =
+    let
+      match = builtins.match ".*/([0-9]+\\.[0-9]+\\.[0-9]+-[0-9]+)/.*" manifest.url;
+    in
+    if match != null then builtins.elemAt match 0 else "unknown";
 in
 stdenv.mkDerivation {
   inherit pname version;
 
   src = fetchurl {
     url = manifest.url;
-    sha512 = manifest.sha512;
+    sha512 = builtins.substring 7 128 manifest.hash; # Remove 'sha512-' prefix from our JSON
   };
 
   nativeBuildInputs =
