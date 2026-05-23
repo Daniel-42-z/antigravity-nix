@@ -174,6 +174,14 @@ All releases: https://github.com/jacopone/antigravity-nix/releases
 
 ## Troubleshooting
 
+### IDE Freezes on Close (Known Upstream Issue)
+
+The Antigravity IDE currently has a known bug across all Linux distributions (not just NixOS) where it may freeze the system upon closing. As a workaround, you can force-kill the process immediately *after* closing the window to prevent the freeze (do not run this before closing, or your work may not be saved):
+
+```bash
+pkill -9 -f antigravity-ide
+```
+
 ### `fetchurl` fails or hash mismatches
 
 If the default `fetchurl` path fails — Google CDN unreachable, regional restrictions, hash drift after an upstream republish, corporate firewall — you can supply the tarball locally via `srcOverride`:
