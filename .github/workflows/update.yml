@@ -30,16 +30,7 @@ jobs:
       - name: Setup Nix cache
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
-      - name: Install Playwright
-        run: |
-          # Install locally (not globally) so node can find the module
-          npm install playwright-chromium
-          npx playwright install chromium
 
       - name: Configure Git
         run: |
@@ -55,15 +46,15 @@ jobs:
           if ./scripts/update-version.sh 2>&1 | tee update_output.txt; then
             echo "update_success=true" >> $GITHUB_OUTPUT
 
-            # Extract new version if updated
-            if grep -q "Update complete" update_output.txt; then
-              # Extract version carefully - only the semver-build pattern
-              NEW_VERSION=$(grep -oP 'version = "\K[0-9]+\.[0-9]+\.[0-9]+-[0-9]+' flake.nix | head -1)
+            # Check if versions.json was modified
+            if git diff --quiet artifacts/versions.json; then
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            else
+              # Extract the newest version string to use in the PR title/branch
+              NEW_VERSION=$(grep -oP '[0-9]+\.[0-9]+\.[0-9]+-[0-9]+' artifacts/versions.json | sort -r | head -1)
               echo "Detected new version: $NEW_VERSION"
               echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
               echo "has_changes=true" >> $GITHUB_OUTPUT
-            else
-              echo "has_changes=false" >> $GITHUB_OUTPUT
             fi
           else
             echo "update_success=false" >> $GITHUB_OUTPUT
@@ -82,12 +73,12 @@ jobs:
           body: |
             ## Google Antigravity Update
 
-            This PR updates Google Antigravity to version **${{ steps.update.outputs.new_version }}**.
+            This PR updates the Google Antigravity Nix flake packages.
+            
+            Latest detected version: **${{ steps.update.outputs.new_version }}**.
 
             ### Changes
-            - Updated version in `flake.nix`
-            - Updated version and hash in `package.nix`
-            - Ran `nix flake update`
+            - Updated versions and hashes in `artifacts/versions.json`
 
             ### Testing
             - ✅ Built successfully
