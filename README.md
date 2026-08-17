@@ -11,8 +11,18 @@ Auto-updating Nix Flake for Google Antigravity -- zero configuration, multi-plat
 - **Three Components**: Packages for Antigravity 2.0 (Base App), Antigravity IDE, and Antigravity CLI (`agy`).
 - **FHS environment** wrapping the upstream GUI binaries with all required libraries.
 - **Automated updates** via GitHub Actions (daily at 0700 UTC), with hash verification and build testing.
-- **Multi-platform** support for x86_64-linux, aarch64-linux, x86_64-darwin, and aarch64-darwin.
+- **Multi-platform**: Linux (`x86_64`, `aarch64`) is built and verified in CI. macOS (`x86_64-darwin`, `aarch64-darwin`) packages are provided and evaluate, but are **experimental and currently untested** — see [macOS](#macos-experimental).
 - **Version pinning** through tagged releases for reproducible builds.
+
+## Migrating from Antigravity 1.x
+
+Antigravity 2.0 (May 2026) split the product into three packages, and this flake's defaults changed to match:
+
+- **`default` / `google-antigravity` is now the standalone Antigravity 2.0 app** (agent orchestration), not the IDE. In the 1.x flake this attribute was the IDE.
+- **The IDE is now `google-antigravity-ide`** (`antigravity-ide` on `PATH`). It remains available, but Google is steering users toward the 2.0 app, so treat it as legacy.
+- **The CLI (`agy`) is new** — it is the successor to the Gemini CLI.
+
+If your config referenced `google-antigravity` / `google-antigravity-no-fhs` expecting the IDE, switch to `google-antigravity-ide` / `google-antigravity-ide-no-fhs`. Because this flake pins versions, you upgrade on your own schedule (`nix flake update antigravity-nix`) — unlike the upstream app, an update here can never silently replace your IDE.
 
 ## Quick Start
 
@@ -202,6 +212,10 @@ This bypasses `fetchurl` while keeping the rest of the packaging (FHS wrapping, 
 - Nix with flakes enabled
 - `allowUnfree = true` (Antigravity is proprietary software)
 - On `aarch64-linux`, Chromium is used automatically since Google Chrome is unavailable
+
+### macOS (experimental)
+
+The darwin packages (`x86_64-darwin`, `aarch64-darwin`) evaluate and fetch the official macOS builds, but are **untested** — CI builds and verifies Linux only. The CLI (`agy`, a plain binary) is the most likely to work; the GUI apps copy the `.app` into `$out/Applications` without code-signing or quarantine handling and may not launch cleanly. Reports and fixes from macOS users are welcome.
 
 ## Contributing
 
