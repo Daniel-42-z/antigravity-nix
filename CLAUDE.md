@@ -121,8 +121,9 @@ Before committing changes to packaging:
 # 1. Verify build succeeds
 nix build .#default --rebuild
 
-# 2. Test the binary runs
-./result/bin/antigravity --version
+# 2. Verify the binary exists (do NOT run `antigravity --version`:
+#    since app 2.8.1 it launches the GUI instead of printing a version)
+test -x ./result/bin/antigravity
 
 # 3. Verify flake metadata
 nix flake metadata
